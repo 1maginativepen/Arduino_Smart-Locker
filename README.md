@@ -19,3 +19,15 @@ Connection of Display Module to Arduino Uno
 | SDA  | A4  |
 | VCC  | 5V  |
 | GND  | GND  | 
+
+Connection of Button Reset to Arduino Uno
+
+| Slot  | Button |
+| ------------- | ------------- |
+| Reset  | Reset Button  |
+| 13  | Registration Button  |
+| 12  | Scan Button  | 
+
+You can follow this schematic for button, For reset button, Just connect 1 foot at Reset then GND for the other
+
+![download](https://user-images.githubusercontent.com/28371423/172420948-8963761a-04c7-443e-a635-87ecfc8eec77.png)
