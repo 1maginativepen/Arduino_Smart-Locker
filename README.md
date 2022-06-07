@@ -9,4 +9,13 @@ Connection from Fingerprint Module 1 to Arduino Uno
 | TX  | 1  |
 | RX  | 2  |
 | VCC  | 3.3V  |
+| GND  | GND  |
+
+Connection of Display Module to Arduino Uno
+
+| Display Module  | Arduino |
+| ------------- | ------------- |
+| SCL  | A5  |
+| SDA  | A4  |
+| VCC  | 5V  |
 | GND  | GND  | 
