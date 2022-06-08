@@ -6,8 +6,8 @@ Connection from Fingerprint Module 1 to Arduino Uno
 
 | Fingerprint Module  | Arduino |
 | ------------- | ------------- |
-| TX  | 1  |
-| RX  | 2  |
+| TX  | 2  |
+| RX  | 3  |
 | VCC  | 3.3V  |
 | GND  | GND  |
 
