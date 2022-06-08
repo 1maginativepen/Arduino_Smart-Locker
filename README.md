@@ -11,7 +11,7 @@ Connection from Fingerprint Module 1 to Arduino Uno
 | VCC  | 3.3V  |
 | GND  | GND  |
 
-Connection of Display Module to Arduino Uno
+Connection of Display Module to Arduino Uno (You can ignore this part)
 
 | Display Module  | Arduino |
 | ------------- | ------------- |
@@ -19,6 +19,12 @@ Connection of Display Module to Arduino Uno
 | SDA  | A4  |
 | VCC  | 5V  |
 | GND  | GND  | 
+
+Connection of Keypad to Arduino 
+Just pin the pins like in the schematic design, but start to pin 4 to pin 11
+
+![keypad to arduino](https://user-images.githubusercontent.com/28371423/172602264-808fa301-6cd1-4e2a-b9f3-b48b056d7a05.png)
+
 
 Connection of Button Reset to Arduino Uno
 
