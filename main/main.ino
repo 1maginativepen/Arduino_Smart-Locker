@@ -1,8 +1,20 @@
+#include <Adafruit_Fingerprint.h>
 #include <Keypad.h>
 #include <LiquidCrystal.h>
-#include <Adafruit_Fingerprint.h>
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
+
+#if (defined(__AVR__) || defined(ESP8266)) && !defined(__AVR_ATmega2560__) 
+SoftwareSerial mySerial(2, 3);
+
+#else 
+#define mySerial Serial1
+
+#endif
+
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+uint8_t id = 1;
+uint8_t process_id = 0;
 
 // Keyboard Rows 
 const int ROW_NUM = 4;  
@@ -28,68 +40,44 @@ const String password = "1234";
 String input_password;
 
 //Display Module Setup for 0x27 Pattern
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
 
-//Fingerprint Module Setup 
-#if (defined(__AVR__) || defined(ESP8266)) && !defined(__AVR_ATmega2560__)
-  SoftwareSerial mySerial(3,2);
-#else
-#define mySerial Serial1
-#endif
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial); 
-uint8_t id = 1;
-
-void setup(){
-      Serial.begin(9600);
-      // maximum input characters is 33, change if needed
-      input_password.reserve(32); 
-
-      // Setup the Display 
-      lcd.init(); 
-      lcd.clear();
-      lcd.init();
-      lcd.backlight();
-      lcd.clear();
-      Display_Startup(); 
-      delay(2000);
-      Selection(); 
+void setup()
+{
+  Serial.begin(9600);
+  lcd.init(); 
+  lcd.clear();
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  Display_Startup(); 
+  delay(2000);
+  Selection(); 
 }
 
-void loop(){
-  char key = keypad.getKey(); 
-
+void loop()               
+{ 
+  char key = keypad.getKey();  
   if (key){
       Serial.println(key);
+      if(key =='D'){  
+        while (!  ScanCommand() );
+        delay(50); 
+      }
       
-      if(key == '*') {
-          input_password = ""; 
-      } else if(key == '#') {
-          if(password == input_password) { 
-              lcd.setCursor(0,0);
-              lcd.print("*ACCESS GRANTED*             "); 
-              lcd.setCursor(0,1);
-              lcd.print("Thank You                    ");  
-              // while (!  ScanCommand() );
-          } else {
-              lcd.setCursor(0,0);
-              lcd.print("*ACCESS DENIED*             "); 
-              lcd.setCursor(0,1);
-              lcd.print("Try Again                    ");  
-              // while (!  ScanCommand() );
-          } 
-          input_password = ""; // clear input password
-      }  
-      
-      // Press D if you want to register new Fingerprint (Admin Rights) 
-      // Press A if you want to scan Fingerprint (Client Side) 
-      else if(key =='D'){ 
-          RegisterProcess();    
-      } else if(key == 'A'){ 
-          ScanProcess();  
-          id=200; 
+      if(key == 'A'){    
+        while (!Serial); 
+        delay(100);   
+        finger.begin(57600);
+        delay(5);  
+        finger.getParameters();  
+        finger.getTemplateCount(); 
+        id=200;
+        while (!  ScanCommand() );
+        delay(50); 
       }
       else {
-          input_password += key; // append new character to input password string 
+          input_password += key; 
           lcd.setCursor(0,1);
           lcd.print(input_password); 
       }
@@ -97,14 +85,124 @@ void loop(){
 }
 
 uint8_t ScanCommand() {
-  if(id == 200){ 
-//    getFingerprintID();
+  if(id == 200){    
+    lcd.setCursor(0,1);
+    lcd.print("                         ");   
+    getFingerprintID();
     delay(50); 
   }else{
-//    registerFingerprint();
+    // REGISTRATION PROCESS HERE
   } 
   return false;
-} 
+}
+
+//***********************************
+//This is for reading the Fingerprint
+//***********************************
+
+uint8_t getFingerprintID() { 
+  uint8_t p = finger.getImage();  
+  lcd.setCursor(0,0);
+  lcd.print("Scan mode                   "); 
+  lcd.setCursor(0,1);
+  switch (p) {
+    case FINGERPRINT_OK:
+      lcd.print("Image Taken...                    "); 
+      break; 
+    case FINGERPRINT_NOFINGER:
+      lcd.setCursor(0,1);
+      if(process_id == 0){ 
+        lcd.print("Waiting input...                   "); 
+      }
+      process_id = 1;
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      lcd.print("Communication Er                    "); 
+      Serial.println("Communication error");
+      return p;
+    case FINGERPRINT_IMAGEFAIL:
+      lcd.print("Imaging Er                    ");  
+      return p; 
+  }
+  
+   delay(1000);           
+  // SUCCESS
+
+  p = finger.image2Tz();
+      lcd.setCursor(0,0);
+      lcd.print("Status:                    ");  
+      lcd.setCursor(0,1);
+  switch (p) {
+    case FINGERPRINT_OK:
+      lcd.print("Image converted                    ");   
+      break;
+    case FINGERPRINT_IMAGEMESS: 
+      lcd.print("Messy Image");   
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR: 
+      lcd.print("Communmication Er           ");    
+      return p;
+    case FINGERPRINT_FEATUREFAIL: 
+      lcd.print("Not Found1                    ");    
+      return p;
+    case FINGERPRINT_INVALIDIMAGE: 
+      lcd.print("Not Found2                   ");     
+      return p;
+    default:
+      Serial.println("Unknown error");
+      return p;
+  }
+  
+  delay(2000);           
+  // OK converted!
+  p = finger.fingerSearch();
+  if (p == FINGERPRINT_OK) { 
+    lcd.setCursor(0,1);
+    lcd.print("Found Match                    "); 
+    // SOLENOID FUNCTIONS HERE  
+    delay(4000);
+    id = 1;
+    setup();
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+    lcd.setCursor(0,1);
+    lcd.print("Communmication Er                   ");    
+    Serial.println("Communication error");
+    return p;
+  } else if (p == FINGERPRINT_NOTFOUND) {
+    lcd.setCursor(0,1);
+    lcd.print("Not Found                   ");   
+    return p;
+  } else {
+    lcd.setCursor(0,1);
+    lcd.print("Error Unknown                   ");   
+    delay(4000);
+    id = 1;
+    setup();
+    return p;
+  } 
+
+   delay(3000);       
+  return finger.fingerID;
+}
+
+// returns -1 if failed, otherwise returns ID #
+int getFingerprintIDez() {
+  uint8_t p = finger.getImage();
+  if (p != FINGERPRINT_OK)  return -1;
+
+  p = finger.image2Tz();
+  if (p != FINGERPRINT_OK)  return -1;
+
+  p = finger.fingerFastSearch();
+  if (p != FINGERPRINT_OK)  return -1; 
+   
+  return finger.fingerID;
+}
+
+
+// **************************
+// DESIGNERS
+// **************************
 
 void Display_Startup(){ 
   lcd.setCursor(0,0);
@@ -118,14 +216,7 @@ void Selection(){
   lcd.print("PLEASE SELECT");
   lcd.setCursor(0,1);
   lcd.print("Scan or Register"); 
-}
-
-void ScanProcess(){ 
-  lcd.setCursor(0,0);
-  lcd.print("Scan mode                   ");
-  lcd.setCursor(0,1);
-  lcd.print("[FINGER IN]                    "); 
-}
+} 
 
 void RegisterProcess(){
   lcd.setCursor(0,0);
@@ -133,7 +224,7 @@ void RegisterProcess(){
   lcd.setCursor(0,1);
   lcd.print("Enter Password                    ");  
   delay(2000); 
-  input_password = ""; // clear key memory
+  input_password = "";  
   lcd.setCursor(0,0);
   lcd.print("Password                   "); 
   lcd.setCursor(0,1);
