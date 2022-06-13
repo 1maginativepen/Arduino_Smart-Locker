@@ -46,6 +46,6 @@ Connection of Button Reset to Arduino Uno  (You can ignore this part)
 | 13  | Registration Button  |
 | 12  | Scan Button  | 
 
-You can follow this schematic for button, For reset button, Just connect 1 foot at Reset then GND for the other
+You can follow this schematic for button, For reset button, Just connect 1 foot at Reset then GND for the other  (Optional)
 
 ![download](https://user-images.githubusercontent.com/28371423/172420948-8963761a-04c7-443e-a635-87ecfc8eec77.png)
