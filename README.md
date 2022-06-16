@@ -13,29 +13,10 @@ Connection from Fingerprint Module 1 to Arduino Uno
 | D  | Reset  |
 
 ## Connections
+Follow this connections for single device 
 
-Connection from Fingerprint Module 1 to Arduino Uno
+![Artboard 1](https://user-images.githubusercontent.com/28371423/174103317-fda46036-f3eb-4fb4-9538-f7e52da353d5.png)
 
-| Fingerprint Module  | Arduino |
-| ------------- | ------------- |
-| TX  | 2  |
-| RX  | 3  |
-| VCC  | 3.3V  |
-| GND  | GND  |
-
-Connection of Display Module to Arduino Uno
-
-| Display Module  | Arduino |
-| ------------- | ------------- |
-| SCL  | A5  |
-| SDA  | A4  |
-| VCC  | 5V  |
-| GND  | GND  | 
-
-Connection of Keypad to Arduino 
-Just pin the pins like in the schematic design, but start to pin 4 to pin 11
-
-![keypad to arduino](https://user-images.githubusercontent.com/28371423/172602264-808fa301-6cd1-4e2a-b9f3-b48b056d7a05.png)
 
 
 Connection of Button Reset to Arduino Uno  (You can ignore this part)
