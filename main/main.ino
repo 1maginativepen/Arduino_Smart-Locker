@@ -25,9 +25,12 @@ Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_
 const String password = "1234";  
 String input_password; 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  
+const int RELAY_PIN = A1;  // the Arduino pin, which connects to the IN pin of relay
 void setup()
 {
   Serial.begin(9600); 
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH);  // lock the door 
   lcd.init(); 
   lcd.clear();
   lcd.init();
@@ -263,7 +266,11 @@ uint8_t getFingerprintID() {
   if (p == FINGERPRINT_OK) {   
     lcd.setCursor(0,1);
     lcd.print("Found Match       "); 
-    delay(3000);           
+    delay(1000);   
+    lcd.setCursor(0,1);
+    lcd.print("Locks in 5 Sec       "); 
+    digitalWrite(RELAY_PIN, LOW); // uhlock the door
+    delay(5000);  
     resetFunc(); 
     return p;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
