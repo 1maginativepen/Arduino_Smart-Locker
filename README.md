@@ -1,8 +1,7 @@
 # Smart Locker - Arduino Project
 IOT Device that uses fingerprint module and solenoids to set the security for the lockers. 
 
-## Running Arduino Controls
-Connection from Fingerprint Module 1 to Arduino Uno
+## Running Arduino Controls 
 
 | Keypad  | Function |
 | ------------- | ------------- |
@@ -12,7 +11,7 @@ Connection from Fingerprint Module 1 to Arduino Uno
 | *  | Clear Input Memory  |
 | D  | Reset  |
 
-## Connections
+### Connections
 Follow this connections for single device 
 
 ![Artboard 1](https://user-images.githubusercontent.com/28371423/174103317-fda46036-f3eb-4fb4-9538-f7e52da353d5.png)
