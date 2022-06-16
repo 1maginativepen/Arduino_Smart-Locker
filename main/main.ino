@@ -36,8 +36,9 @@ void setup()
   lcd.init();
   lcd.backlight();
   lcd.clear(); 
-  lcd.setCursor(0,0);
-  lcd.print("Smart Locker"); 
+  // lcd.setCursor(0,0);
+  // lcd.print("Smart Locker"); 
+  // Uncomment the Line 39-40 then Change the "Smart Locker" on what's needed
   lcd.setCursor(0,1);
   lcd.print("[A]Reg [B]Scan");  
 } 
